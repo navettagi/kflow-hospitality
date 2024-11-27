@@ -6,32 +6,26 @@ import {
   Inbox,
   Clock,
   AlertCircle,
-  CheckCircle2,
   Loader2,
   Search,
   Filter,
   Star,
   Timer,
   MoreVertical,
-  Coffee,
-  Wifi,
   ShowerHead,
   Utensils,
-  Wallet,
   ThermometerSun,
   Tool,
   Crown,
-  Wrench,
-  ScrollText,
+  X,
   Bath,
   CalendarClock,
   PartyPopper
 } from 'lucide-react';
+
 import {
   Card,
-  CardContent,
-  CardHeader,
-  CardTitle
+  CardContent  
 } from '@/components/ui/card';
 
 // Definizione dei tipi di servizio e relative configurazioni
@@ -40,14 +34,14 @@ type ServiceType = 'guest_request' | 'vip_request' | 'preventive' | 'room_servic
 interface ServiceConfig {
   bgColor: string;
   borderColor: string;
-  icon: any; // In un contesto reale, dovremmo definire un tipo più specifico
+  //icon: any; // In un contesto reale, dovremmo definire un tipo più specifico
   label: string;
 }
 
 interface Filter {
     id: string;
     label: string;
-    icon?: any;
+    //icon?: any;
   }
 
 const serviceIcons = {
