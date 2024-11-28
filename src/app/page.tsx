@@ -11,7 +11,7 @@ export default function Home() {
       </main>
       
       <footer className="mt-8 text-center text-sm text-gray-500">
-        © 2024 KFlow. All rights reserved.
+        © 2024 KFlow Hospitality. All rights reserved.
       </footer>
     </div>
   );

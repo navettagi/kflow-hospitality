@@ -9,6 +9,12 @@ const nextConfig: NextConfig = {
       ...config.resolve.alias,
       '@': require('path').resolve(__dirname, 'src'),
     }
+
+    config.resolve.fallback = {
+      'child_process': false,
+      'fs': false,
+    }
+
     return config
   },
 }
