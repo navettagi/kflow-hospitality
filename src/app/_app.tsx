@@ -1,5 +1,5 @@
-// src/app/_app.tsx
 import { Inter } from 'next/font/google';
+import { ReactNode } from 'react';
 
 const inter = Inter({ subsets: ['latin'] });
 
@@ -8,7 +8,11 @@ export const metadata = {
   description: 'Property Management System for Hospitality',
 };
 
-export default function App({ children }) {
+interface AppProps {
+  children: ReactNode;
+}
+
+export default function App({ children }: AppProps) {
   return (
     <html lang="en" className={inter.className}>
       <body>{children}</body>

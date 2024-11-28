@@ -1,5 +1,7 @@
 .
  |-src
+ | |-translations
+ | | |-translator.ts
  | |-app
  | | |-layout.tsx
  | | |-maintenance
@@ -8,13 +10,10 @@
  | | |-_app.tsx
  | | |-bid-staff
  | | | |-page.tsx
- | | | |-bid-staff.tsx
  | | |-favicon.ico
  | | |-tasks
  | | | |-page.tsx
  | | |-page.tsx
- | | |-messages
- | | | |-page.tsx
  | | |-ticket-detail-view
  | | | |-page.tsx
  | | |-guest-service-flow
@@ -41,6 +40,8 @@
  | | | |-button.tsx
  | | | |-tabs.tsx
  | | | |-alert.tsx
+ | |-types
+ | | |-translations.ts
  |-package-lock.json
  |-project-structure.txt
  |-tailwind.config.ts
@@ -58,4 +59,9 @@
  | |-next.svg
  | |-file.svg
  | |-window.svg
+ | |-images
+ | | |-ahmed-khan.jpg
+ | | |-abdul-rahman.jpg
+ | | |-john-smith.jpg
+ | | |-jorge-santos.jpg
  | |-vercel.svg

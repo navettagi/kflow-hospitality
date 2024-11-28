@@ -1,0 +1,18 @@
+export type TranslationKeys =
+    | 'title'
+    | 'activeTickets'
+    | 'averageResponse' 
+    | 'minutes'
+    | 'frontDesk'
+    | 'frontDeskDesc'
+    | 'phone' 
+    | 'phoneDesc'
+    | 'mobileApp'
+    | 'mobileAppDesc'
+    | 'email'
+    | 'emailDesc'
+    | 'aiConcierge'
+    | 'aiConciergeDesc'
+    | 'emergency'
+    | 'emergencyDesc'
+    | 'emergencyAlert';

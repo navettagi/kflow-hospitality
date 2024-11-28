@@ -1,228 +1,186 @@
 "use client";
 
-import { useState } from 'react';
+import React, { useState } from 'react';
 import { 
-  CheckCircle2,
-  Camera,
   Clock,
   AlertTriangle,
-  Calendar,
-  MapPin,
-  MessageSquare,
-  Timer
+  ThumbsUp,
+  ThumbsDown,
+  User,
+  Check,
+  X
 } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
+import { Alert, AlertDescription } from '@/components/ui/alert';
 
-const languages = [
-  { code: 'en', name: 'English' },
-  { code: 'ar', name: 'العربية' },
-  { code: 'hi', name: 'हिंदी' },
-  { code: 'ur', name: 'اردو' },
-  { code: 'tl', name: 'Tagalog' }
-];
+const TaskBidPage = () => {
+  const [showDenyReasons, setShowDenyReasons] = useState(false);
+  const [selectedReason, setSelectedReason] = useState<string>('');
+  const [responseSubmitted, setResponseSubmitted] = useState(false);
 
-const translations = {
-  en: {
-    title: "Today Works & Tasks",
-    welcome: "Welcome back",
-    pendingTasks: "Pending Tasks",
-    completedTasks: "Completed Tasks",
-    location: "Location",
-    timeSlot: "Time Slot",
-    priority: "Priority",
-    status: "Status",
-    addPhoto: "Add Photo",
-    markComplete: "Mark as Complete",
-    reportIssue: "Report Issue",
-    notes: "Notes",
-    submit: "Submit",
-    photoAdded: "Photo added",
-    high: "High",
-    medium: "Medium",
-    low: "Low"
-  }
-};
-
-const MaintenanceWorkflow = () => {
-  const [language, setLanguage] = useState('en');
-  const [tasks, setTasks] = useState([
-    {
-      id: 1,
-      title: {
-        en: "Commercial Dishwasher Maintenance",
-        ar: "صيانة غسالة الأطباق التجارية",
-        hi: "व्यावसायिक डिशवॉशर रखरखाव",
-        ur: "کمرشل ڈش واشر کی دیکھ بھال",
-        tl: "Maintenance ng Commercial Dishwasher"
-      },
-      description: {
-        en: "Check water temperature, clean filters, inspect spray arms",
-        ar: "فحص درجة حرارة الماء وتنظيف الفلاتر وفحص أذرع الرش",
-        hi: "पानी का तापमान जांचें, फ़िल्टर साफ़ करें, स्प्रे आर्म्स की जांच करें",
-        ur: "پانی کا درجہ حرارت چیک کریں، فلٹرز صاف کریں، سپرے آرمز کا معائنہ کریں",
-        tl: "Suriin ang temperatura ng tubig, linisin ang mga filter, inspeksyunin ang spray arms"
-      },
-      location: "Kitchen - Zone 2",
-      timeSlot: "07:00 - 08:00",
-      priority: "high",
-      status: "pending"
-    },
-    {
-      id: 2,
-      title: {
-        en: "Pool Equipment Inspection",
-        ar: "فحص معدات حمام السباحة",
-        hi: "स्विमिंग पूल उपकरण निरीक्षण",
-        ur: "سوئمنگ پول کے آلات کا معائنہ",
-        tl: "Inspeksyon ng Kagamitan sa Pool"
-      },
-      description: {
-        en: "Check pump operation, filter pressure, chemical levels",
-        ar: "فحص تشغيل المضخة وضغط الفلتر ومستويات المواد الكيميائية",
-        hi: "पंप संचालन, फिल्टर दबाव, रासायनिक स्तर की जाँच करें",
-        ur: "پمپ آپریشن، فلٹر پریشر، کیمیکل لیول چیک کریں",
-        tl: "Suriin ang operasyon ng pump, filter pressure, chemical levels"
-      },
-      location: "Pool Area",
-      timeSlot: "08:30 - 09:30",
-      priority: "high",
-      status: "pending"
+  // Staff member data
+  const staffMember = {
+    name: "John Smith",
+    title: "Senior Maintenance Engineer",
+    image: "/images/john-smith.jpg",
+    stats: {
+      completed: 128,
+      pending: 3
     }
-  ]);
-
-  const t = (key) => translations[language]?.[key] || translations.en[key];
-  const getLocalizedText = (textObj) => textObj[language] || textObj.en;
-
-  const handlePhotoUpload = (taskId) => {
-    setTasks(tasks.map(task => 
-      task.id === taskId 
-        ? { ...task, photos: [...(task.photos || []), `photo_${Date.now()}`] }
-        : task
-    ));
   };
 
-  const handleTaskComplete = (taskId) => {
-    setTasks(tasks.map(task =>
-      task.id === taskId
-        ? { ...task, status: 'completed' }
-        : task
-    ));
+  const denyReasons = [
+    "Already assigned to another urgent task",
+    "Not qualified for this specific repair",
+    "Equipment/tools not available",
+    "Outside of working hours",
+    "On planned leave",
+    "Health and safety concerns"
+  ] as const;
+
+  const handleAccept = () => {
+    setResponseSubmitted(true);
+    // Here you would typically make an API call to accept the task
   };
 
-  const getPriorityColor = (priority) => ({
-    high: 'bg-red-100 text-red-800',
-    medium: 'bg-yellow-100 text-yellow-800',
-    low: 'bg-green-100 text-green-800'
-  }[priority]);
+  const handleDeny = (reason: string) => {
+    setSelectedReason(reason);
+    setResponseSubmitted(true);
+    // Here you would typically make an API call to deny the task with the reason
+  };
+
+  if (responseSubmitted) {
+    return (
+      <div className="w-full max-w-2xl mx-auto p-4">
+        <Alert className={selectedReason ? "bg-orange-50" : "bg-green-50"}>
+          <AlertDescription className="flex items-center gap-2">
+            {selectedReason ? (
+              <>
+                <ThumbsDown className="h-4 w-4 text-orange-500" />
+                <span>Task declined. Reason: {selectedReason}</span>
+              </>
+            ) : (
+              <>
+                <ThumbsUp className="h-4 w-4 text-green-500" />
+                <span>Task accepted successfully!</span>
+              </>
+            )}
+          </AlertDescription>
+        </Alert>
+      </div>
+    );
+  }
 
   return (
-    <div className={`w-full max-w-4xl mx-auto p-4 ${language === 'ar' || language === 'ur' ? 'rtl' : 'ltr'}`}>
-      <div className="flex justify-between items-center mb-6">
+    <div className="w-full max-w-4xl mx-auto p-4">
+      {/* Staff Member Header */}
+      <div className="mb-8 flex items-center gap-4">
+        <img
+          src={staffMember.image}
+          alt={staffMember.name}
+          className="w-16 h-16 rounded-full"
+        />
         <div>
-          <h1 className="text-2xl font-bold">{t('title')}</h1>
-          <p className="text-gray-600">{t('welcome')}, Ahmed Al-Mansouri</p>
+          <h1 className="text-2xl font-semibold">{staffMember.name}</h1>
+          <p className="text-gray-600">{staffMember.title}</p>
         </div>
-        <select
-          value={language}
-          onChange={(e) => setLanguage(e.target.value)}
-          className="px-3 py-2 border rounded-lg"
-        >
-          {languages.map((lang) => (
-            <option key={lang.code} value={lang.code}>
-              {lang.name}
-            </option>
-          ))}
-        </select>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-        <Card className="bg-blue-50 border-blue-200">
+      {/* Stats Cards */}
+      <div className="grid grid-cols-2 gap-4 mb-8">
+        <Card>
           <CardContent className="p-4">
-            <div className="flex items-center gap-2">
-              <Clock className="w-5 h-5 text-blue-500" />
-              <div className="text-sm">
-                <div className="font-medium">{t('timeSlot')}</div>
-                <div>07:00 - 16:00</div>
-              </div>
-            </div>
+            <h2 className="text-3xl font-bold mb-1">{staffMember.stats.completed}</h2>
+            <p className="text-gray-600">Completed Tasks</p>
           </CardContent>
         </Card>
-        <Card className="bg-green-50 border-green-200">
+        <Card>
           <CardContent className="p-4">
-            <div className="flex items-center gap-2">
-              <CheckCircle2 className="w-5 h-5 text-green-500" />
-              <div className="text-sm">
-                <div className="font-medium">{t('completedTasks')}</div>
-                <div>0/4</div>
-              </div>
-            </div>
+            <h2 className="text-3xl font-bold mb-1">{staffMember.stats.pending}</h2>
+            <p className="text-gray-600">Pending Tasks</p>
           </CardContent>
         </Card>
       </div>
 
-      <div className="space-y-4">
-        {tasks.map((task) => (
-          <Card key={task.id} className={`border-l-4 ${
-            task.priority === 'high' ? 'border-l-red-500' : 'border-l-yellow-500'
-          }`}>
-            <CardContent className="p-4">
-              <div className="flex flex-col space-y-4">
-                <div className="flex justify-between items-start">
-                  <div>
-                    <h3 className="text-lg font-semibold">
-                      {getLocalizedText(task.title)}
-                    </h3>
-                    <p className="text-gray-600">
-                      {getLocalizedText(task.description)}
-                    </p>
-                  </div>
-                  <span className={`px-3 py-1 rounded-full text-sm ${getPriorityColor(task.priority)}`}>
-                    {t(task.priority)}
-                  </span>
-                </div>
+      {/* Task Assignment Card */}
+      <Card className="mb-6">
+        <CardContent className="p-6">
+          <div className="flex items-center justify-end gap-4 mb-6">
+            <div className="text-right">
+              <h3 className="font-medium">Assigned by</h3>
+              <p className="text-sm text-gray-600">Ahmed Khan</p>
+              <p className="text-xs text-gray-500">Maintenance Supervisor</p>
+            </div>
+            <img
+              src="/images/ahmed-khan.jpg"
+              alt="Ahmed Khan"
+              className="w-12 h-12 rounded-full"
+            />
+          </div>
 
-                <div className="grid grid-cols-2 gap-4 text-sm">
-                  <div className="flex items-center gap-2">
-                    <MapPin className="w-4 h-4 text-gray-500" />
-                    {task.location}
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Clock className="w-4 h-4 text-gray-500" />
-                    {task.timeSlot}
-                  </div>
-                </div>
+          <div className="space-y-4">
+            <div className="flex justify-between items-center">
+              <h2 className="text-xl font-semibold">AC Maintenance</h2>
+              <span className="px-3 py-1 rounded-full text-sm bg-red-100 text-red-800">
+                High Priority
+              </span>
+            </div>
 
-                <div className="flex gap-2">
+            <div className="space-y-2">
+              <p className="text-gray-700"><strong>Location:</strong> Suite 507</p>
+              <p className="text-gray-700"><strong>Estimated Duration:</strong> 45 min</p>
+              <p className="text-gray-700"><strong>Description:</strong> Guest reported AC making loud noise and not cooling properly. Temperature reading shows 26°C despite being set to 21°C.</p>
+            </div>
+
+            <div className="flex items-center gap-2 text-blue-600">
+              <Clock className="w-5 h-5" />
+              <span className="text-sm font-medium">Response needed within: 15 min</span>
+            </div>
+          </div>
+
+          {!showDenyReasons ? (
+            <div className="mt-6 flex gap-4">
+              <button
+                onClick={handleAccept}
+                className="flex-1 flex items-center justify-center gap-2 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700"
+              >
+                <Check className="w-5 h-5" />
+                Accept Task
+              </button>
+              <button
+                onClick={() => setShowDenyReasons(true)}
+                className="flex-1 flex items-center justify-center gap-2 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200"
+              >
+                <X className="w-5 h-5" />
+                Deny Task
+              </button>
+            </div>
+          ) : (
+            <div className="mt-6">
+              <h3 className="font-medium mb-3">Select reason for declining:</h3>
+              <div className="space-y-2">
+                {denyReasons.map((reason) => (
                   <button
-                    onClick={() => handlePhotoUpload(task.id)}
-                    className="flex items-center gap-2 px-4 py-2 border rounded-lg hover:bg-gray-50"
+                    key={reason}
+                    onClick={() => handleDeny(reason)}
+                    className="w-full text-left px-4 py-2 rounded-lg border hover:bg-gray-50"
                   >
-                    <Camera className="w-4 h-4" />
-                    {t('addPhoto')}
+                    {reason}
                   </button>
-                  
-                  <button
-                    onClick={() => handleTaskComplete(task.id)}
-                    className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700"
-                  >
-                    <CheckCircle2 className="w-4 h-4" />
-                    {t('markComplete')}
-                  </button>
-                  
-                  <button
-                    className="flex items-center gap-2 px-4 py-2 border border-red-500 text-red-500 rounded-lg hover:bg-red-50"
-                  >
-                    <AlertTriangle className="w-4 h-4" />
-                    {t('reportIssue')}
-                  </button>
-                </div>
+                ))}
               </div>
-            </CardContent>
-          </Card>
-        ))}
-      </div>
+              <button
+                onClick={() => setShowDenyReasons(false)}
+                className="mt-4 w-full py-2 text-gray-600 hover:text-gray-800"
+              >
+                Cancel
+              </button>
+            </div>
+          )}
+        </CardContent>
+      </Card>
     </div>
   );
 };
 
-export default MaintenanceWorkflow;
+export default TaskBidPage;

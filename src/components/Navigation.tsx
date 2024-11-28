@@ -16,16 +16,16 @@ import {
 
 import { useState } from 'react';
 
-const Navigation = ({ currentPath }) => {
+const Navigation = ({ currentPath }: { currentPath: string }) => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
 
   const supervisorNavigation = [
     { name: 'Dashboard', href: '/dashboard', icon: Home },
     { name: 'Guest Service Hub', href: '/guest-service-hub', icon: Users },
     { name: 'Guest Service Flow', href: '/guest-service-flow', icon: Settings },
-    { name: 'Bid Supervisor', href: '/bid-supervisor', icon: MessageSquare },
     { name: 'Ticket Detail View', href: '/ticket-detail-view', icon: BarChart },
-    { name: 'Purchasing Dpt', href: '/purchasing', icon: ShoppingCart },  // Add this line
+    { name: 'Purchasing Dpt', href: '/purchasing', icon: ShoppingCart },
+    { name: 'Bid Supervisor', href: '/bid-supervisor', icon: MessageSquare },  // Add this line
 ];
 
   const staffNavigation = [

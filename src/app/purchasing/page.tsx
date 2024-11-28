@@ -5,7 +5,6 @@ import dynamic from 'next/dynamic';
 import { Card, CardHeader, CardTitle, CardContent } from '@/components/ui/card';
 import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { TrendingUp, PackageSearch, Users, AlertCircle, AlertTriangle, Package, RefreshCcw } from 'lucide-react';
-
 import {
   LineChart,
   Line,
@@ -16,9 +15,38 @@ import {
   Legend,
 } from 'recharts';
 
+interface CostData {
+  month: string;
+  actual: number;
+  projected: number;
+  optimal: number;
+  budget: number;
+}
+
+interface ExpenseData {
+  category: string;
+  amount: number;
+  status: 'urgent' | 'normal';
+}
+
+interface InventoryItem {
+  name: string;
+  stock: number;
+  reorderPoint: number;
+  monthlyUsage: number;
+  unit: string;
+}
+
+interface Categories {
+  bathroom: InventoryItem[];
+  lighting: InventoryItem[];
+  bedding: InventoryItem[];
+  cleaning: InventoryItem[];
+}
+
 const PurchasingDashboard = () => {
   // Cost tracking data
-  const costData = [
+  const costData: CostData[] = [
     { month: 'Jan', actual: 4000, projected: 4500, optimal: 4500, budget: 6000 },
     { month: 'Feb', actual: 4200, projected: 4500, optimal: 4500, budget: 6000 },
     { month: 'Mar', actual: 3800, projected: 4500, optimal: 4500, budget: 6000 },
@@ -28,7 +56,7 @@ const PurchasingDashboard = () => {
   ];
 
   // April expense breakdown
-  const aprilExpenses = [
+  const aprilExpenses: ExpenseData[] = [
     { category: 'Emergency HVAC Replacement', amount: 3500, status: 'urgent' },
     { category: 'Regular Maintenance Supplies', amount: 2200, status: 'normal' },
     { category: 'Water System Repairs', amount: 2100, status: 'urgent' },
@@ -36,7 +64,7 @@ const PurchasingDashboard = () => {
   ];
 
   // Inventory categories data
-  const categories = {
+  const categories: Categories = {
     bathroom: [
       { name: 'Shampoo 30ml', stock: 850, reorderPoint: 500, monthlyUsage: 600, unit: 'units' },
       { name: 'Body Wash 30ml', stock: 920, reorderPoint: 500, monthlyUsage: 580, unit: 'units' },
@@ -71,14 +99,14 @@ const PurchasingDashboard = () => {
   };
 
   // Helper function for stock status
-  const getStockStatus = (stock, reorderPoint) => {
+  const getStockStatus = (stock: number, reorderPoint: number): string => {
     const ratio = stock / reorderPoint;
     if (ratio <= 1) return 'text-red-600 bg-red-50';
     if (ratio <= 1.5) return 'text-yellow-600 bg-yellow-50';
     return 'text-green-600 bg-green-50';
   };
 
-  const renderCategoryTab = (items, category) => (
+  const renderCategoryTab = (items: InventoryItem[], category: string) => (
     <Card>
       <CardHeader>
         <div className="flex justify-between items-center">
@@ -128,7 +156,6 @@ const PurchasingDashboard = () => {
       <h1 className="text-2xl font-bold mb-6">Purchasing Management Suite</h1>
       
       <Tabs defaultValue="dashboard">
-        {/* Main Tab List */}
         <TabsList className="grid w-full grid-cols-4">
           <TabsTrigger value="dashboard" className="flex items-center gap-2">
             <TrendingUp className="w-4 h-4" />
@@ -148,7 +175,6 @@ const PurchasingDashboard = () => {
           </TabsTrigger>
         </TabsList>
 
-        {/* Dashboard Content */}
         <TabsContent value="dashboard">
           <div className="grid grid-cols-1 gap-4">
             <Card>
@@ -190,7 +216,6 @@ const PurchasingDashboard = () => {
               </CardContent>
             </Card>
 
-            {/* April Expense Breakdown Card */}
             <Card className="bg-amber-50">
               <CardHeader>
                 <div className="flex items-center gap-2">
@@ -250,7 +275,6 @@ const PurchasingDashboard = () => {
           </div>
         </TabsContent>
 
-        {/* Inventory Content */}
         <TabsContent value="inventory">
           <div className="w-full space-y-4">
             <div className="grid grid-cols-4 gap-4 mb-6">

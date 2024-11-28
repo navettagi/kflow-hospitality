@@ -1,6 +1,5 @@
 'use client';
-
-import React, { useState } from 'react';
+import { useState } from 'react';
 import { 
   Filter, 
   X, 
@@ -24,10 +23,7 @@ import {
   Calendar,
   User
 } from 'lucide-react';
-import {
-  Card,
-  CardContent,
-} from '@/components/ui/card';
+import { Card, CardContent } from '@/components/ui/card';
 
 interface FilterState {
   technicalType: string[];
@@ -44,18 +40,13 @@ interface FilterOption {
   value: string;
   icon?: React.ElementType;
   color?: string;
+  role?: string; // Make role optional
 }
 
 export function FilterMenu() {
   const [showFilters, setShowFilters] = useState(false);
   const [filters, setFilters] = useState<FilterState>({
-    technicalType: [],
-    serviceType: [],
-    priority: [],
-    roomType: [],
-    timeFrame: 'all',
-    status: [],
-    assignedStaff: []
+    technicalType: [], serviceType: [], priority: [], roomType: [], timeFrame: 'all', status: [], assignedStaff: []
   });
 
   const filterOptions = {
@@ -126,8 +117,8 @@ export function FilterMenu() {
                 checked={filters[filterKey].includes(option.value)}
                 onChange={(e) => {
                   const newValues = e.target.checked
-                    ? [...filters[filterKey], option.value]
-                    : filters[filterKey].filter(v => v !== option.value);
+                    ? [...filters[filterKey] as string[], option.value]
+                    : (filters[filterKey] as string[]).filter((v) => v !== option.value);
                   setFilters({ ...filters, [filterKey]: newValues });
                 }}
               />
@@ -137,7 +128,7 @@ export function FilterMenu() {
                 )}
                 <div>
                   <span className="text-sm">{option.label}</span>
-                  {showRole && 'role' in option && (
+                  {showRole && option.role && ( // Ensure option.role exists before rendering
                     <span className="text-xs text-gray-500 block">{option.role}</span>
                   )}
                 </div>
@@ -213,13 +204,7 @@ export function FilterMenu() {
               <button
                 onClick={() => {
                   setFilters({
-                    technicalType: [],
-                    serviceType: [],
-                    priority: [],
-                    roomType: [],
-                    timeFrame: 'all',
-                    status: [],
-                    assignedStaff: []
+                    technicalType: [], serviceType: [], priority: [], roomType: [], timeFrame: 'all', status: [], assignedStaff: []
                   });
                 }}
                 className="px-3 py-1 text-sm text-gray-600 hover:bg-gray-100 rounded"

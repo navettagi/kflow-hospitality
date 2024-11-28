@@ -1,155 +1,295 @@
 "use client";
 
 import React, { useState } from 'react';
-import { Bell, Clock, User, MessageSquare, Timer, AlertCircle } from 'lucide-react';
+import { Bell, AlertTriangle, CheckCircle2 } from 'lucide-react';
+import { Alert, AlertDescription } from '@/components/ui/alert';
+import { Card, CardContent } from '@/components/ui/card';
+
+type Language = 'en' | 'ar' | 'ur';
+
+interface StaffMember {
+  id: string;
+  name: string;
+  image: string;
+  role: string;
+  skillLevel: 'Basic' | 'Advanced' | 'Expert';
+  mainSkills: string[];
+}
+
+interface Translations {
+  assignTask: string;
+  serviceRequest: string;
+  availableStaff: string;
+  skills: string;
+  currentTask: string;
+  status: string;
+  available: string;
+  busy: string;
+  selected: string;
+  room: string;
+  requestType: string;
+  priority: string;
+  estimatedDuration: string;
+  description: string;
+  assignedBy: string;
+  sendRequest: string;
+  skillLevel: string;
+  mainSkills: string;
+  select: string;
+  deselect: string;
+}
+
+interface TranslationDictionary {
+  en: Translations;
+  ar: Translations;
+  ur: Translations;
+}
 
 export default function SupervisorView() {
-  const [language, setLanguage] = useState('en');
-  const [showDeclineReason, setShowDeclineReason] = useState(false);
+  const [language, setLanguage] = useState<Language>('en');
+  const [selectedStaff, setSelectedStaff] = useState<string[]>(['john-smith', 'jorge-santos']);
 
-  const translations = {
+  const translations: TranslationDictionary = {
     en: {
-      room: "Room",
-      hairDryer: "Hair Dryer",
-      via: "via WhatsApp",
-      declined: "Declined",
+      assignTask: "Assign Task",
+      serviceRequest: "Service Request",
+      availableStaff: "Available Staff",
+      skills: "Skills",
       currentTask: "Current Task",
-      emergencyRepair: "Emergency AC Repair",
-      busy: "Busy",
+      status: "Status",
       available: "Available",
-      declinedReason: "Currently handling emergency AC repair in Room 506",
-      viewReason: "View Reason"
+      busy: "Busy",
+      selected: "Selected",
+      room: "Room",
+      requestType: "Request Type",
+      priority: "Priority",
+      estimatedDuration: "Estimated Duration",
+      description: "Description",
+      assignedBy: "Assigning Supervisor",
+      sendRequest: "Send Request to Selected Staff",
+      skillLevel: "Skill Level",
+      mainSkills: "Main Skills",
+      select: "Select",
+      deselect: "Deselect"
     },
     ar: {
-      room: "غرفة",
-      hairDryer: "مجفف شعر",
-      via: "عبر واتساب",
-      declined: "مرفوض",
+      assignTask: "تعيين مهمة",
+      serviceRequest: "طلب خدمة",
+      availableStaff: "الموظفون المتاحون",
+      skills: "المهارات",
       currentTask: "المهمة الحالية",
-      emergencyRepair: "إصلاح طارئ للتكييف",
-      busy: "مشغول",
+      status: "الحالة",
       available: "متاح",
-      declinedReason: "يعالج حاليا إصلاح مكيف الهواء الطارئ في الغرفة 506",
-      viewReason: "عرض السبب"
-    },
-    hi: {
-      room: "कमरा",
-      hairDryer: "हेयर ड्रायर",
-      via: "व्हाट्सएप के माध्यम से",
-      declined: "अस्वीकृत",
-      currentTask: "वर्तमान कार्य",
-      emergencyRepair: "आपातकालीन एसी मरम्मत",
-      busy: "व्यस्त",
-      available: "उपलब्ध",
-      declinedReason: "वर्तमान में कमरा 506 में आपातकालीन एसी मरम्मत",
-      viewReason: "कारण देखें"
+      busy: "مشغول",
+      selected: "تم الاختيار",
+      room: "غرفة",
+      requestType: "نوع الطلب",
+      priority: "الأولوية",
+      estimatedDuration: "المدة المتوقعة",
+      description: "الوصف",
+      assignedBy: "المشرف المكلف",
+      sendRequest: "إرسال الطلب إلى الموظفين المختارين",
+      skillLevel: "مستوى المهارة",
+      mainSkills: "المهارات الرئيسية",
+      select: "اختيار",
+      deselect: "إلغاء الاختيار"
     },
     ur: {
-      room: "کمرہ",
-      hairDryer: "ہیئر ڈرائر",
-      via: "واٹس ایپ کے ذریعے",
-      declined: "مسترد",
+      assignTask: "ٹاسک تفویض کریں",
+      serviceRequest: "سروس کی درخواست",
+      availableStaff: "دستیاب عملہ",
+      skills: "مہارتیں",
       currentTask: "موجودہ ٹاسک",
-      emergencyRepair: "ہنگامی اے سی مرمت",
-      busy: "مصروف",
+      status: "حیثیت",
       available: "دستیاب",
-      declinedReason: "کمرہ 506 میں ہنگامی اے سی مرمت کی جارہی ہے",
-      viewReason: "وجہ دیکھیں"
-    },
-    tl: {
-      room: "Kuwarto",
-      hairDryer: "Hair Dryer",
-      via: "sa WhatsApp",
-      declined: "Hindi Tinanggap",
-      currentTask: "Kasalukuyang Gawain",
-      emergencyRepair: "Emergency AC Repair",
-      busy: "Abala",
-      available: "Available",
-      declinedReason: "Kasalukuyang nasa emergency AC repair sa Room 506",
-      viewReason: "Tingnan ang Dahilan"
+      busy: "مصروف",
+      selected: "منتخب شدہ",
+      room: "کمرہ",
+      requestType: "درخواست کی قسم",
+      priority: "ترجیح",
+      estimatedDuration: "متوقع دورانیہ",
+      description: "تفصیل",
+      assignedBy: "تفویض کنندہ سپروائزر",
+      sendRequest: "منتخب شدہ عملے کو درخواست بھیجیں",
+      skillLevel: "مہارت کی سطح",
+      mainSkills: "اہم مہارتیں",
+      select: "منتخب کریں",
+      deselect: "غیر منتخب کریں"
     }
   };
 
-  const t = (key) => translations[language]?.[key] || translations.en[key];
+  const staffMembers: StaffMember[] = [
+    {
+      id: 'john-smith',
+      name: 'John Smith',
+      image: '/images/john-smith.jpg',
+      role: 'HVAC Specialist',
+      skillLevel: 'Expert',
+      mainSkills: ['HVAC Systems', 'AC Maintenance', 'Temperature Control']
+    },
+    {
+      id: 'jorge-santos',
+      name: 'Jorge Santos',
+      image: '/images/jorge-santos.jpg',
+      role: 'Maintenance Technician',
+      skillLevel: 'Advanced',
+      mainSkills: ['General Maintenance', 'Basic HVAC', 'Electrical Systems']
+    },
+    {
+      id: 'abdul-rahman',
+      name: 'Abdul Rahman',
+      image: '/images/abdul-rahman.jpg',
+      role: 'Junior Technician',
+      skillLevel: 'Basic',
+      mainSkills: ['General Maintenance', 'Basic Repairs']
+    }
+  ];
+
+  const t = (key: keyof Translations): string => {
+    return translations[language]?.[key] || translations.en[key];
+  };
+
+  const toggleStaffSelection = (staffId: string): void => {
+    setSelectedStaff(prev => 
+      prev.includes(staffId) 
+        ? prev.filter(id => id !== staffId)
+        : [...prev, staffId]
+    );
+  };
+
+  const handleSendRequest = (): void => {
+    console.log('Sending request to:', selectedStaff);
+    // Handle request sending logic here
+  };
 
   return (
-    <div className="w-full max-w-md mx-auto bg-white shadow-lg rounded-lg overflow-hidden">
-      <div className="p-4 bg-gray-50 border-b flex justify-end items-center">
-        <select 
-          value={language}
-          onChange={(e) => setLanguage(e.target.value)}
-          className="px-2 py-1 border rounded"
-        >
-          <option value="en">English</option>
-          <option value="ar">العربية</option>
-          <option value="hi">हिंदी</option>
-          <option value="ur">اردو</option>
-          <option value="tl">Tagalog</option>
-        </select>
-      </div>
+    <div className="container mx-auto py-6">
+      <div className="p-4 max-w-4xl mx-auto space-y-4">
+        <div className="flex justify-between items-center mb-4">
+          <Alert className="flex-1 py-3">
+            <Bell className="w-6 h-6" />
+            <AlertDescription className="text-xl ml-2 font-medium">{t('assignTask')}</AlertDescription>
+          </Alert>
+          <select 
+            value={language}
+            onChange={(e) => setLanguage(e.target.value as Language)}
+            className="ml-4 px-3 py-2 border rounded"
+          >
+            <option value="en">English</option>
+            <option value="ar">العربية</option>
+            <option value="ur">اردو</option>
+          </select>
+        </div>
 
-      <div className={`p-6 ${language === 'ar' || language === 'ur' ? 'rtl' : 'ltr'}`}>
-        <div className="space-y-4">
-          <div className="bg-blue-50 p-4 rounded-lg">
-            <div className="flex items-center justify-between mb-2">
-              <span className="font-medium">{t('room')} 412 - {t('hairDryer')}</span>
-              <Timer className="w-4 h-4 text-blue-500" />
+        <div className="bg-blue-50 rounded-lg p-6 border-2 border-blue-100">
+          {/* Supervisor Info */}
+          <div className="flex items-center gap-3 mb-6">
+            <img 
+              src="/images/ahmed-khan.jpg"
+              alt="Ahmed Khan"
+              className="w-12 h-12 rounded-full object-cover"
+            />
+            <div>
+              <div className="text-sm text-gray-600">{t('assignedBy')}</div>
+              <div className="text-lg font-medium">Ahmed Khan</div>
+              <div className="text-sm italic text-gray-500">Maintenance Supervisor</div>
             </div>
-            <div className="text-sm text-gray-600">
-              {t('via')} • 14:30
+          </div>
+          {/* Request Details */}
+          <div className="bg-white rounded-lg p-4 mb-6 shadow-sm">
+            <div className="grid grid-cols-2 gap-4 mb-4">
+              <div>
+                <div className="text-sm text-gray-600">{t('room')}</div>
+                <div className="text-lg font-semibold">Suite 507</div>
+              </div>
+              <div>
+                <div className="text-sm text-gray-600">{t('requestType')}</div>
+                <div className="text-lg font-semibold">AC Maintenance</div>
+              </div>
+              <div>
+                <div className="text-sm text-gray-600">{t('priority')}</div>
+                <div className="flex items-center gap-1">
+                  <AlertTriangle className="w-5 h-5 text-amber-500" />
+                  <span className="text-lg font-semibold text-amber-500">High</span>
+                </div>
+              </div>
+              <div>
+                <div className="text-sm text-gray-600">{t('estimatedDuration')}</div>
+                <div className="text-lg font-semibold">45 min</div>
+              </div>
+            </div>
+
+            <div>
+              <div className="text-sm text-gray-600 mb-1">{t('description')}</div>
+              <div className="text-base">Guest reported AC making loud noise and not cooling properly. Temperature reading shows 26°C despite being set to 21°C.</div>
             </div>
           </div>
 
-          <div className="space-y-2">
-            {/* Staff member who declined */}
-            <div className="border rounded p-3 bg-gray-50">
-              <div className="flex items-center justify-between mb-2">
-                <div className="flex items-center gap-2">
-                  <User className="w-4 h-4 text-gray-500" />
-                  <span>Ahmed Khan</span>
-                </div>
-                <span className="px-2 py-1 rounded-full text-xs bg-red-100 text-red-800">
-                  {t('declined')}
-                </span>
+          {/* Available Staff */}
+<Card>
+  <CardContent className="p-4">
+    <h3 className="text-lg font-semibold mb-4">{t('availableStaff')}</h3>
+    <div className="space-y-4">
+      {staffMembers.map((staff) => (
+        <div 
+          key={staff.id}
+          className={`flex justify-between items-center p-4 rounded-lg border ${
+            selectedStaff.includes(staff.id)
+              ? 'bg-green-50 border-green-200'
+              : 'bg-white border-gray-200'
+          }`}
+        >
+          <div className="flex items-center gap-3">
+            <img 
+              src={staff.image}
+              alt={staff.name}
+              className={`w-10 h-10 rounded-full object-cover ${
+                selectedStaff.includes(staff.id) 
+                  ? 'border-2 border-green-500' 
+                  : 'border border-gray-200'
+              }`}
+            />
+            <div>
+              <div className="font-medium">{staff.name}</div>
+              <div className="text-sm text-gray-600">{staff.role}</div>
+              <div className="text-sm text-gray-500 mt-1">
+                <span className="font-medium">{t('skillLevel')}:</span> {staff.skillLevel}
               </div>
-              <div className="flex items-center gap-2 text-sm">
-                <AlertCircle className="w-4 h-4 text-gray-500" />
-                <span className="text-gray-600">{t('currentTask')}: {t('emergencyRepair')} 506</span>
+              <div className="text-sm text-gray-500">
+                <span className="font-medium">{t('mainSkills')}:</span> {staff.mainSkills.join(', ')}
               </div>
-              {showDeclineReason ? (
-                <div className="mt-2 text-sm text-gray-600 bg-white p-2 rounded border">
-                  {t('declinedReason')}
-                </div>
-              ) : (
-                <button 
-                  onClick={() => setShowDeclineReason(true)}
-                  className="mt-2 text-sm text-blue-600 hover:text-blue-800"
-                >
-                  {t('viewReason')}
-                </button>
-              )}
             </div>
+          </div>
+          <button
+            onClick={() => toggleStaffSelection(staff.id)}
+            className={`px-4 py-2 rounded-lg transition-colors ${
+              selectedStaff.includes(staff.id)
+                ? 'bg-green-600 text-white hover:bg-green-700'
+                : 'border border-blue-600 text-blue-600 hover:bg-blue-50'
+            }`}
+          >
+            {selectedStaff.includes(staff.id) ? t('deselect') : t('select')}
+          </button>
+        </div>
+      ))}
+    </div>
+  </CardContent>
+</Card>
 
-            {/* Other staff members */}
-            {[
-              { name: "Maria Santos", status: "busy" },
-              { name: "Juan Dela Cruz", status: "available" },
-              { name: "Rose Mae Garcia", status: "busy" }  
-            ].map((worker, index) => (
-              <div key={index} className="flex items-center justify-between p-2 border rounded">
-                <div className="flex items-center gap-2">
-                  <User className="w-4 h-4 text-gray-500" />
-                  <span>{worker.name}</span>
-                </div>
-                <span className={`px-2 py-1 rounded-full text-xs ${
-                  worker.status === 'available' 
-                    ? 'bg-green-100 text-green-800'
-                    : 'bg-yellow-100 text-yellow-800'
-                }`}>
-                  {t(worker.status)}
-                </span>
-              </div>
-            ))}
+          {/* Send Request Button */}
+          <div className="mt-6 flex justify-end">
+            <button
+              onClick={handleSendRequest}
+              disabled={selectedStaff.length === 0}
+              className={`px-6 py-3 rounded-lg flex items-center gap-2 ${
+                selectedStaff.length > 0
+                  ? 'bg-blue-600 text-white hover:bg-blue-700'
+                  : 'bg-gray-300 text-gray-500 cursor-not-allowed'
+              }`}
+            >
+              <CheckCircle2 className="w-5 h-5" />
+              {t('sendRequest')} ({selectedStaff.length})
+            </button>
           </div>
         </div>
       </div>

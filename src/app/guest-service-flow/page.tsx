@@ -15,12 +15,13 @@ import {
   ShowerHead,
   Utensils,
   ThermometerSun,
-  Tool,
+  Wrench, // Changed from Tool to Wrench
   Crown,
   X,
   Bath,
   CalendarClock,
-  PartyPopper
+  PartyPopper,
+  LucideIcon
 } from 'lucide-react';
 
 import {
@@ -30,19 +31,38 @@ import {
 
 // Definizione dei tipi di servizio e relative configurazioni
 type ServiceType = 'guest_request' | 'vip_request' | 'preventive' | 'room_service' | 'laundry' | 'maintenance';
+type ServiceIconType = 'GUEST_REQUEST' | 'VIP_REQUEST' | 'PREVENTIVE' | 'ROOM_SERVICE' | 'LAUNDRY' | 'MAINTENANCE' | 'AC';
 
 interface ServiceConfig {
   bgColor: string;
   borderColor: string;
-  //icon: any; // In un contesto reale, dovremmo definire un tipo più specifico
+  iconType: ServiceIconType;
   label: string;
 }
 
 interface Filter {
-    id: string;
-    label: string;
-    //icon?: any;
-  }
+  id: string;
+  label: string;
+  icon?: LucideIcon;
+}
+
+interface Ticket {
+  id: string;
+  room: string;
+  issue: string;
+  priority: 'high' | 'medium' | 'low';
+  status: string;
+  time: string;
+  sla: string;
+  type: ServiceType;
+  serviceIcon: ServiceIconType;
+}
+
+interface Column {
+  id: string;
+  label: string;
+  icon: LucideIcon;
+}
 
 const serviceIcons = {
   GUEST_REQUEST: ShowerHead,
@@ -50,7 +70,7 @@ const serviceIcons = {
   PREVENTIVE: CalendarClock,
   ROOM_SERVICE: Utensils,
   LAUNDRY: Bath,
-  MAINTENANCE: Tool,
+  MAINTENANCE: Wrench, // Updated here as well
   AC: ThermometerSun,
 } as const;
 
@@ -58,42 +78,42 @@ const serviceConfig: Record<ServiceType, ServiceConfig> = {
   guest_request: {
     bgColor: 'bg-blue-50',
     borderColor: 'border-blue-200',
-    icon: serviceIcons.GUEST_REQUEST,
+    iconType: 'GUEST_REQUEST',
     label: 'Guest Request'
   },
   vip_request: {
     bgColor: 'bg-purple-50',
     borderColor: 'border-purple-200',
-    icon: serviceIcons.VIP_REQUEST,
+    iconType: 'VIP_REQUEST',
     label: 'VIP Request'
   },
   preventive: {
     bgColor: 'bg-green-50',
     borderColor: 'border-green-200',
-    icon: serviceIcons.PREVENTIVE,
+    iconType: 'PREVENTIVE',
     label: 'Preventive'
   },
   room_service: {
     bgColor: 'bg-amber-50',
     borderColor: 'border-amber-200',
-    icon: serviceIcons.ROOM_SERVICE,
+    iconType: 'ROOM_SERVICE',
     label: 'Room Service'
   },
   laundry: {
     bgColor: 'bg-cyan-50',
     borderColor: 'border-cyan-200',
-    icon: serviceIcons.LAUNDRY,
+    iconType: 'LAUNDRY',
     label: 'Laundry'
   },
   maintenance: {
     bgColor: 'bg-red-50',
     borderColor: 'border-red-200',
-    icon: serviceIcons.MAINTENANCE,
+    iconType: 'MAINTENANCE',
     label: 'Maintenance'
   }
 };
 
-const columns = [
+const columns: Column[] = [
   { id: 'incoming', label: 'New Requests', icon: Inbox },
   { id: 'inspection', label: 'On-Site Inspection', icon: AlertCircle },
   { id: 'validation', label: 'Validation', icon: Loader2 },
@@ -101,138 +121,135 @@ const columns = [
   { id: 'completed', label: 'Completed', icon: PartyPopper }
 ];
 
-const tickets = [
-    // Card esistenti ridistribuite tra le colonne
-    {
-      id: 'T1001',
-      room: 'Suite 801',
-      issue: 'AC not working properly',
-      priority: 'high',
-      status: 'validation',
-      time: '10 min ago',
-      sla: '15 min',
-      type: 'vip_request' as ServiceType,
-      serviceIcon: 'AC'
-    },
-    {
-      id: 'T1002',
-      room: 'Room 505',
-      issue: 'Extra towels needed',
-      priority: 'medium',
-      status: 'in_process',
-      time: '25 min ago',
-      sla: '45 min',
-      type: 'guest_request' as ServiceType,
-      serviceIcon: 'GUEST_REQUEST'
-    },
-    {
-      id: 'T1003',
-      room: 'Room 302',
-      issue: 'Monthly HVAC System Check',
-      priority: 'low',
-      status: 'inspection',
-      time: '1h ago',
-      sla: '4h',
-      type: 'preventive' as ServiceType,
-      serviceIcon: 'MAINTENANCE'
-    },
-    {
-      id: 'T1004',
-      room: 'Suite 902',
-      issue: 'Breakfast Service - Special Diet',
-      priority: 'high',
-      status: 'incoming',
-      time: '35 min ago',
-      sla: '20 min',
-      type: 'room_service' as ServiceType,
-      serviceIcon: 'ROOM_SERVICE'
-    },
-    {
-      id: 'T1005',
-      room: 'Room 610',
-      issue: 'Express Suit Cleaning',
-      priority: 'high',
-      status: 'incoming',
-      time: '45 min ago',
-      sla: '2h',
-      type: 'laundry' as ServiceType,
-      serviceIcon: 'LAUNDRY'
-    },
-    {
-      id: 'T1006',
-      room: 'Room 103',
-      issue: 'Light fixture flickering',
-      priority: 'medium',
-      status: 'in_process',
-      time: '2h ago',
-      sla: '3h',
-      type: 'maintenance' as ServiceType,
-      serviceIcon: 'MAINTENANCE'
-    },
-    {
-      id: 'T1007',
-      room: 'Presidential Suite 1001',
-      issue: 'Room Temperature Adjustment',
-      priority: 'high',
-      status: 'inspection',
-      time: '5 min ago',
-      sla: '10 min',
-      type: 'vip_request' as ServiceType,
-      serviceIcon: 'AC'
-    },
-    {
-      id: 'T1008',
-      room: 'Room 405',
-      issue: 'Weekly Water Quality Check',
-      priority: 'medium',
-      status: 'validation',
-      time: '3h ago',
-      sla: '5h',
-      type: 'preventive' as ServiceType,
-      serviceIcon: 'MAINTENANCE'
-    },
-    // Nuove card nella colonna Completed
-    {
-      id: 'T1009',
-      room: 'Suite 701',
-      issue: 'Mini Bar Refill',
-      priority: 'medium',
-      status: 'completed',
-      time: '1h ago',
-      sla: 'Completed',
-      type: 'room_service' as ServiceType,
-      serviceIcon: 'ROOM_SERVICE'
-    },
-    {
-      id: 'T1010',
-      room: 'Room 205',
-      issue: 'TV Remote Battery Replacement',
-      priority: 'low',
-      status: 'completed',
-      time: '2h ago',
-      sla: 'Completed',
-      type: 'maintenance' as ServiceType,
-      serviceIcon: 'MAINTENANCE'
-    },
-    {
-        id: 'T1011',
-        room: 'Presidential Suite 1002',
-        issue: 'Extra Pillows Delivery',
-        priority: 'medium',
-        status: 'completed',
-        time: '30min ago',
-        sla: 'Completed',
-        type: 'guest_request' as ServiceType,
-        serviceIcon: 'GUEST_REQUEST'
-      }
-    ];
+const tickets: Ticket[] = [
+  // Card esistenti ridistribuite tra le colonne
+  {
+    id: 'T1001',
+    room: 'Suite 801',
+    issue: 'AC not working properly',
+    priority: 'high',
+    status: 'validation',
+    time: '10 min ago',
+    sla: '15 min',
+    type: 'vip_request',
+    serviceIcon: 'AC'
+  },
+  {
+    id: 'T1002',
+    room: 'Room 505',
+    issue: 'Extra towels needed',
+    priority: 'medium',
+    status: 'in_process',
+    time: '25 min ago',
+    sla: '45 min',
+    type: 'guest_request',
+    serviceIcon: 'GUEST_REQUEST'
+  },
+  {
+    id: 'T1003',
+    room: 'Room 302',
+    issue: 'Monthly HVAC System Check',
+    priority: 'low',
+    status: 'inspection',
+    time: '1h ago',
+    sla: '4h',
+    type: 'preventive',
+    serviceIcon: 'MAINTENANCE'
+  },
+  {
+    id: 'T1004',
+    room: 'Suite 902',
+    issue: 'Breakfast Service - Special Diet',
+    priority: 'high',
+    status: 'incoming',
+    time: '35 min ago',
+    sla: '20 min',
+    type: 'room_service',
+    serviceIcon: 'ROOM_SERVICE'
+  },
+  {
+    id: 'T1005',
+    room: 'Room 610',
+    issue: 'Express Suit Cleaning',
+    priority: 'high',
+    status: 'incoming',
+    time: '45 min ago',
+    sla: '2h',
+    type: 'laundry',
+    serviceIcon: 'LAUNDRY'
+  },
+  {
+    id: 'T1006',
+    room: 'Room 103',
+    issue: 'Light fixture flickering',
+    priority: 'medium',
+    status: 'in_process',
+    time: '2h ago',
+    sla: '3h',
+    type: 'maintenance',
+    serviceIcon: 'MAINTENANCE'
+  },
+  {
+    id: 'T1007',
+    room: 'Presidential Suite 1001',
+    issue: 'Room Temperature Adjustment',
+    priority: 'high',
+    status: 'inspection',
+    time: '5 min ago',
+    sla: '10 min',
+    type: 'vip_request',
+    serviceIcon: 'AC'
+  },
+  {
+    id: 'T1008',
+    room: 'Room 405',
+    issue: 'Weekly Water Quality Check',
+    priority: 'medium',
+    status: 'validation',
+    time: '3h ago',
+    sla: '5h',
+    type: 'preventive',
+    serviceIcon: 'MAINTENANCE'
+  },
+  {
+    id: 'T1009',
+    room: 'Suite 701',
+    issue: 'Mini Bar Refill',
+    priority: 'medium',
+    status: 'completed',
+    time: '1h ago',
+    sla: 'Completed',
+    type: 'room_service',
+    serviceIcon: 'ROOM_SERVICE'
+  },
+  {
+    id: 'T1010',
+    room: 'Room 205',
+    issue: 'TV Remote Battery Replacement',
+    priority: 'low',
+    status: 'completed',
+    time: '2h ago',
+    sla: 'Completed',
+    type: 'maintenance',
+    serviceIcon: 'MAINTENANCE'
+  },
+  {
+    id: 'T1011',
+    room: 'Presidential Suite 1002',
+    issue: 'Extra Pillows Delivery',
+    priority: 'medium',
+    status: 'completed',
+    time: '30min ago',
+    sla: 'Completed',
+    type: 'guest_request',
+    serviceIcon: 'GUEST_REQUEST'
+  }
+];
     
     export default function GuestServiceFlow() {
-      // Stati per i filtri
       const [activeFilters, setActiveFilters] = useState<Filter[]>([]);
       const [filteredTickets, setFilteredTickets] = useState(tickets);
     
-      // Funzioni per gestire i filtri
       const removeFilter = (filterId: string) => {
         setActiveFilters(activeFilters.filter(filter => filter.id !== filterId));
       };
@@ -241,24 +258,21 @@ const tickets = [
         setActiveFilters([]);
       };
     
-      // Funzione per il colore della priorità
-      const getPriorityColor = (priority: string) => {
+      const getPriorityColor = (priority: Ticket['priority']) => {
         const colors = {
           high: 'bg-red-100 text-red-800',
           medium: 'bg-yellow-100 text-yellow-800',
           low: 'bg-green-100 text-green-800'
-        };
-        return colors[priority as keyof typeof colors] || 'bg-gray-100';
+        } as const;
+        return colors[priority];
       };
     
-      // Funzione per lo stile del servizio
       const getServiceStyle = (type: ServiceType) => {
         return serviceConfig[type] || serviceConfig.guest_request;
       };
     
-      // Funzione per l'icona del servizio
-      const getServiceIcon = (iconKey: string) => {
-        return serviceIcons[iconKey as keyof typeof serviceIcons] || serviceIcons.GUEST_REQUEST;
+      const getServiceIcon = (iconKey: ServiceIconType) => {
+        return serviceIcons[iconKey] || serviceIcons.GUEST_REQUEST;
       };
     
 

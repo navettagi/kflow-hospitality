@@ -1,17 +1,36 @@
 "use client";
-
 import { useState } from 'react';
 import { 
-  CheckCircle2,
-  Camera,
-  Clock,
-  AlertTriangle,
-  Calendar,
-  MapPin,
-  MessageSquare,
-  Timer
+  CheckCircle2, Camera, Clock, AlertTriangle,
+  Calendar, MapPin, MessageSquare, Timer
 } from 'lucide-react';
 import { Card, CardContent } from '@/components/ui/card';
+
+interface StaffData {
+  name: string;
+  role: string;
+  photo: string;
+  taskCount: {
+    completed: number;
+    pending: number;
+  };
+}
+
+interface Task {
+  id: number;
+  title: { [key: string]: string };
+  description: { [key: string]: string };
+  location: string;
+  timeSlot: string;
+  priority: 'high' | 'medium' | 'low';
+  status: 'pending' | 'completed';
+  subtasks: {
+    id: number;
+    text: string;
+    completed: boolean;
+  }[];
+  photos?: string[];
+}
 
 const languages = [
   { code: 'en', name: 'English' },
@@ -43,67 +62,57 @@ const translations = {
   }
 };
 
+const staffData: StaffData = {
+  name: "John Smith",
+  role: "Senior Maintenance Engineer",
+  photo: "/images/john-smith.jpg",
+  taskCount: {
+    completed: 128,
+    pending: 3
+  }
+};
+
+const initialTasks: Task[] = [
+  {
+    id: 1,
+    title: { en: "Check HVAC System" },
+    description: { en: "Inspect and test HVAC components" },
+    location: "Building A",
+    timeSlot: "9:00 AM - 10:00 AM",
+    priority: "high",
+    status: "pending",
+    subtasks: [
+      { id: 1, text: "Check filters", completed: false },
+      { id: 2, text: "Test temperature", completed: false }
+    ]
+  },
+  {
+    id: 2,
+    title: { en: "Electrical Maintenance" },
+    description: { en: "Check electrical panels and connections" },
+    location: "Building B",
+    timeSlot: "11:00 AM - 12:00 PM",
+    priority: "medium",
+    status: "pending",
+    subtasks: [
+      { id: 1, text: "Inspect panels", completed: false },
+      { id: 2, text: "Test circuits", completed: false }
+    ]
+  }
+];
+
 const MaintenanceWorkflow = () => {
   const [language, setLanguage] = useState('en');
-  const [tasks, setTasks] = useState([
-    {
-      id: 1,
-      title: {
-        en: "Commercial Dishwasher Maintenance",
-        ar: "صيانة غسالة الأطباق التجارية",
-        hi: "व्यावसायिक डिशवॉशर रखरखाव",
-        ur: "کمرشل ڈش واشر کی دیکھ بھال",
-        tl: "Maintenance ng Commercial Dishwasher"
-      },
-      description: {
-        en: "Check water temperature, clean filters, inspect spray arms",
-        ar: "فحص درجة حرارة الماء وتنظيف الفلاتر وفحص أذرع الرش",
-        hi: "पानी का तापमान जांचें, फ़िल्टर साफ़ करें, स्प्रे आर्म्स की जांच करें",
-        ur: "پانی کا درجہ حرارت چیک کریں، فلٹرز صاف کریں، سپرے آرمز کا معائنہ کریں",
-        tl: "Suriin ang temperatura ng tubig, linisin ang mga filter, inspeksyunin ang spray arms"
-      },
-      location: "Kitchen - Zone 2",
-      timeSlot: "07:00 - 08:00",
-      priority: "high",
-      status: "pending",
-      subtasks: [
-        { id: 1, text: 'Check water temperature', completed: false },
-        { id: 2, text: 'Clean filters', completed: false },
-        { id: 3, text: 'Inspect spray arms', completed: false },
-      ]
-    },
-    {
-      id: 2,
-      title: {
-        en: "Pool Equipment Inspection",
-        ar: "فحص معدات حمام السباحة",
-        hi: "स्विमिंग पूल उपकरण निरीक्षण",
-        ur: "سوئمنگ پول کے آلات کا معائنہ",
-        tl: "Inspeksyon ng Kagamitan sa Pool"
-      },
-      description: {
-        en: "Check pump operation, filter pressure, chemical levels",
-        ar: "فحص تشغيل المضخة وضغط الفلتر ومستويات المواد الكيميائية",
-        hi: "पंप संचालन, फिल्टर दबाव, रासायनिक स्तर की जाँच करें",
-        ur: "پمپ آپریشن، فلٹر پریشر، کیمیکل لیول چیک کریں",
-        tl: "Suriin ang operasyon ng pump, filter pressure, chemical levels"
-      },
-      location: "Pool Area",
-      timeSlot: "08:30 - 09:30", 
-      priority: "low",
-      status: "pending",
-      subtasks: [
-        { id: 1, text: 'Check pump operation', completed: false },
-        { id: 2, text: 'Verify filter pressure', completed: false },
-        { id: 3, text: 'Test chemical levels', completed: false },
-      ]
-    }
-  ]);
+  const [tasks, setTasks] = useState<Task[]>(initialTasks);
 
-  const t = (key) => translations[language]?.[key] || translations.en[key];
-  const getLocalizedText = (textObj) => textObj[language] || textObj.en;
+  const t = (key: keyof typeof translations.en): string => 
+    translations[language as keyof typeof translations]?.[key] || 
+    translations.en[key];
 
-  const handleSubtaskChange = (taskId, subtaskId) => {
+  const getLocalizedText = (textObj: { [key: string]: string }): string => 
+    textObj[language] || textObj.en;
+
+  const handleSubtaskChange = (taskId: number, subtaskId: number): void => {
     setTasks(tasks.map(task => 
       task.id === taskId 
         ? {
@@ -118,23 +127,7 @@ const MaintenanceWorkflow = () => {
     ));
   };
 
-  const handlePhotoUpload = (taskId) => {
-    setTasks(tasks.map(task => 
-      task.id === taskId 
-        ? { ...task, photos: [...(task.photos || []), `photo_${Date.now()}`] }
-        : task
-    ));
-  };
-
-  const handleTaskComplete = (taskId) => {
-    setTasks(tasks.map(task =>
-      task.id === taskId
-        ? { ...task, status: 'completed' }
-        : task
-    ));
-  };
-
-  const getPriorityColor = (priority) => ({
+  const getPriorityColor = (priority: Task['priority']): string => ({
     high: 'bg-red-100 text-red-800',
     medium: 'bg-yellow-100 text-yellow-800', 
     low: 'bg-green-100 text-green-800'
@@ -142,122 +135,95 @@ const MaintenanceWorkflow = () => {
 
   return (
     <div className={`w-full max-w-4xl mx-auto p-4 ${language === 'ar' || language === 'ur' ? 'rtl' : 'ltr'}`}>
-      <div className="flex justify-between items-center mb-6">
-        <div>
-          <h1 className="text-2xl font-bold">{t('title')}</h1>
-          <p className="text-gray-600">{t('welcome')}, Ahmed Al-Mansouri</p>
+      <div className="flex items-center justify-between mb-6">
+        <div className="flex items-center gap-4">
+          <img
+            src={staffData.photo}
+            alt={staffData.name}
+            className="w-16 h-16 rounded-full"
+          />
+          <div>
+            <h2 className="font-semibold text-lg">{staffData.name}</h2>
+            <p className="text-gray-600">{staffData.role}</p>
+          </div>
         </div>
-        <select
+        <select 
           value={language}
           onChange={(e) => setLanguage(e.target.value)}
-          className="px-3 py-2 border rounded-lg"
+          className="border rounded p-2"
         >
-          {languages.map((lang) => (
-            <option key={lang.code} value={lang.code}>
-              {lang.name}
-            </option>
+          {languages.map(lang => (
+            <option key={lang.code} value={lang.code}>{lang.name}</option>
           ))}
         </select>
       </div>
 
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-6">
-        <Card className="bg-blue-50 border-blue-200">
+      <div className="grid grid-cols-2 gap-4 mb-6">
+        <Card>
           <CardContent className="p-4">
-            <div className="flex items-center gap-2">
-              <Clock className="w-5 h-5 text-blue-500" />
-              <div className="text-sm">
-                <div className="font-medium">{t('timeSlot')}</div>
-                <div>07:00 - 16:00</div>
-              </div>
-            </div>
+            <div className="text-2xl font-bold">{staffData.taskCount.completed}</div>
+            <div className="text-gray-600">{t('completedTasks')}</div>
           </CardContent>
         </Card>
-        <Card className="bg-green-50 border-green-200">
+        <Card>
           <CardContent className="p-4">
-            <div className="flex items-center gap-2">
-              <CheckCircle2 className="w-5 h-5 text-green-500" />
-              <div className="text-sm">
-                <div className="font-medium">{t('completedTasks')}</div>
-                <div>0/4</div>
-              </div>
-            </div>
+            <div className="text-2xl font-bold">{staffData.taskCount.pending}</div>
+            <div className="text-gray-600">{t('pendingTasks')}</div>
           </CardContent>
         </Card>
       </div>
 
-      <div className="space-y-4">
-        {tasks.map((task) => (
-          <Card key={task.id} className={`border-l-4 ${
-            task.priority === 'high' ? 'border-l-red-500' : 'border-l-yellow-500'
-          }`}>
+      <h1 className="text-2xl font-bold mb-4">{t('title')}</h1>
+      
+      <div className="grid gap-4">
+        {tasks.map(task => (
+          <Card key={task.id} className="w-full">
             <CardContent className="p-4">
-              <div className="flex flex-col space-y-4">
-                <div className="flex justify-between items-start">
-                  <div>
-                    <h3 className="text-lg font-semibold">
-                      {getLocalizedText(task.title)}
-                    </h3>
-                    <p className="text-gray-600">
-                      {getLocalizedText(task.description)}
-                    </p>
-                  </div>
-                  <span className={`px-3 py-1 rounded-full text-sm ${getPriorityColor(task.priority)}`}>
-                    {t(task.priority)}
-                  </span>
+              <div className="flex justify-between items-start mb-4">
+                <h2 className="text-xl font-semibold">{getLocalizedText(task.title)}</h2>
+                <span className={`px-2 py-1 rounded text-sm ${getPriorityColor(task.priority)}`}>
+                  {t(task.priority)}
+                </span>
+              </div>
+              
+              <div className="grid gap-2 mb-4">
+                <div className="flex items-center gap-2">
+                  <MapPin className="w-4 h-4" />
+                  <span>{task.location}</span>
                 </div>
+                <div className="flex items-center gap-2">
+                  <Clock className="w-4 h-4" />
+                  <span>{task.timeSlot}</span>
+                </div>
+              </div>
 
-                <div className="grid grid-cols-2 gap-4 text-sm">
-                  <div className="flex items-center gap-2">
-                    <MapPin className="w-4 h-4 text-gray-500" />
-                    {task.location}
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Clock className="w-4 h-4 text-gray-500" />
-                    {task.timeSlot}
-                  </div>
-                </div>
+              <div className="space-y-2 mb-4">
+                {task.subtasks.map(subtask => (
+                  <label key={subtask.id} className="flex items-center gap-2">
+                    <input
+                      type="checkbox"
+                      checked={subtask.completed}
+                      onChange={() => handleSubtaskChange(task.id, subtask.id)}
+                      className="rounded"
+                    />
+                    <span>{subtask.text}</span>
+                  </label>
+                ))}
+              </div>
 
-                <div className="space-y-2">
-                  <div className="font-medium">Subtasks:</div>
-                  {task.subtasks.map((subtask) => (
-                    <label key={subtask.id} className="flex items-center gap-2">
-                      <input 
-                        type="checkbox"
-                        checked={subtask.completed}
-                        onChange={() => handleSubtaskChange(task.id, subtask.id)}
-                        className="w-4 h-4"
-                      />
-                      <span className={subtask.completed ? 'line-through text-gray-500' : ''}>
-                        {subtask.text}
-                      </span>
-                    </label>
-                  ))}
-                </div>
-
-                <div className="flex gap-2">
-                  <button
-                    onClick={() => handlePhotoUpload(task.id)}
-                    className="flex items-center gap-2 px-4 py-2 border rounded-lg hover:bg-gray-50"
-                  >
-                    <Camera className="w-4 h-4" />
-                    {t('addPhoto')}
-                  </button>
-                  
-                  <button
-                    onClick={() => handleTaskComplete(task.id)}
-                    className="flex items-center gap-2 px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700"
-                  >
-                    <CheckCircle2 className="w-4 h-4" />
-                    {t('markComplete')}
-                  </button>
-                  
-                  <button
-                    className="flex items-center gap-2 px-4 py-2 border border-red-500 text-red-500 rounded-lg hover:bg-red-50"
-                  >
-                    <AlertTriangle className="w-4 h-4" />
-                    {t('reportIssue')}
-                  </button>
-                </div>
+              <div className="flex gap-2">
+                <button className="flex items-center gap-1 px-3 py-2 bg-blue-500 text-white rounded hover:bg-blue-600">
+                  <Camera className="w-4 h-4" />
+                  {t('addPhoto')}
+                </button>
+                <button className="flex items-center gap-1 px-3 py-2 bg-green-500 text-white rounded hover:bg-green-600">
+                  <CheckCircle2 className="w-4 h-4" />
+                  {t('markComplete')}
+                </button>
+                <button className="flex items-center gap-1 px-3 py-2 bg-yellow-500 text-white rounded hover:bg-yellow-600">
+                  <AlertTriangle className="w-4 h-4" />
+                  {t('reportIssue')}
+                </button>
               </div>
             </CardContent>
           </Card>
