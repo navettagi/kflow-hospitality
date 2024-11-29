@@ -1,8 +1,12 @@
 "use client";
 
 import React, { useState } from 'react';
-import { Trash2 } from 'lucide-react';
-import {
+import { 
+  Trash2,
+  Package2,
+  AlertCircle,
+  ShoppingCart,
+  DollarSign,
   MapPin,
   Timer,
   Image,
@@ -10,7 +14,6 @@ import {
   ChevronLeft,
   Send,
   Camera,
-  AlertCircle,
   Link
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
@@ -39,6 +42,98 @@ const ImagePreview = () => {
         </button>
       )}
     </div>
+  );
+};
+
+type PartStatus = 'in_stock' | 'low_stock' | 'out_of_stock';
+
+interface Part {
+  id: string;
+  name: string;
+  status: PartStatus;
+  quantity: number;
+  price: number;
+  image: string;
+}
+
+const PartsInventoryCard = () => {
+  const parts: Part[] = [
+    {
+      id: 'P001',
+      name: 'LED Driver 100W',
+      status: 'in_stock',
+      quantity: 3,
+      price: 45.99,
+      image: '/images/led-driver.jpg'
+    },
+    {
+      id: 'P002',
+      name: 'Light Round Bulb Warm (3000k)',
+      status: 'low_stock',
+      quantity: 6,
+      price: 7.99,
+      image: '/images/roundbulb.jpg'
+    }
+  ];
+
+  const getStatusColor = (status: 'in_stock' | 'low_stock' | 'out_of_stock'): string => {
+    const colors = {
+      in_stock: 'bg-green-100 text-green-800',
+      low_stock: 'bg-yellow-100 text-yellow-800',
+      out_of_stock: 'bg-red-100 text-red-800'
+    };
+    return colors[status] || '';
+  };
+
+  return (
+    <Card>
+      <CardHeader className="flex flex-row items-center justify-between">
+        <CardTitle>Parts & Inventory</CardTitle>
+        <button className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 flex items-center gap-2">
+          <ShoppingCart className="w-4 h-4" />
+          Request Parts
+        </button>
+      </CardHeader>
+      <CardContent>
+        <div className="space-y-4">
+          {parts.map((part) => (
+            <div key={part.id} className="flex items-center justify-between p-3 border rounded-lg">
+              <div className="flex items-center gap-4">
+                <img 
+                  src={part.image} 
+                  alt={part.name}
+                  className="w-16 h-16 object-cover rounded-lg"
+                />
+                <div>
+                  <div className="font-medium">{part.name}</div>
+                  <div className="text-sm text-gray-500">Part #{part.id}</div>
+                  <div className="mt-1">
+                    <span className={`text-xs px-2 py-1 rounded-full ${getStatusColor(part.status)}`}>
+                      {part.status === 'in_stock' ? 'In Stock' : 'Low Stock'}
+                    </span>
+                  </div>
+                </div>
+              </div>
+              <div className="text-right">
+                <div className="text-lg font-medium">${part.price}</div>
+                <div className="text-sm text-gray-500">Qty: {part.quantity}</div>
+              </div>
+            </div>
+          ))}
+          
+          <div className="mt-4 p-3 bg-gray-50 rounded-lg">
+            <div className="flex items-center justify-between text-sm">
+              <span className="text-gray-600">Estimated Total:</span>
+              <span className="font-medium">$135.98</span>
+            </div>
+            <div className="flex items-center gap-2 mt-2 text-xs text-gray-500">
+              <AlertCircle className="w-4 h-4" />
+              Prices may vary based on vendor availability
+            </div>
+          </div>
+        </div>
+      </CardContent>
+    </Card>
   );
 };
 
@@ -165,34 +260,37 @@ const TicketDetailView = () => {
             </CardContent>
           </Card>
 
+          {/* Parts Inventory Card */}
+          <PartsInventoryCard />
+
           {/* Timeline Card */}
           <Card>
             <CardHeader>
               <CardTitle>Timeline</CardTitle>
             </CardHeader>
             <CardContent>
-            <div className="space-y-4">
-              {timeline.map((event, index) => (
-                <div key={index} className="flex gap-4">
-                  <div className="w-16 text-sm text-gray-500">
-                    {event.time}
+              <div className="space-y-4">
+                {timeline.map((event, index) => (
+                  <div key={index} className="flex gap-4">
+                    <div className="w-16 text-sm text-gray-500">
+                      {event.time}
+                    </div>
+                    <div className="flex-1 pb-4 border-l-2 border-gray-200 pl-4 relative">
+                      <div className="absolute w-2 h-2 bg-blue-600 rounded-full -left-[5px] top-2" />
+                      <div className="text-sm font-medium">{event.user}</div>
+                      {event.role && (
+                        <div className="text-xs text-gray-500 mb-1">{event.role}</div>
+                      )}
+                      <div className="text-sm text-gray-600">{event.note}</div>
+                      {event.attachment && (
+                        <div className="mt-3">
+                          {event.attachment}
+                        </div>
+                      )}
+                    </div>
                   </div>
-                  <div className="flex-1 pb-4 border-l-2 border-gray-200 pl-4 relative">
-                    <div className="absolute w-2 h-2 bg-blue-600 rounded-full -left-[5px] top-2" />
-                    <div className="text-sm font-medium">{event.user}</div>
-                    {event.role && (
-                      <div className="text-xs text-gray-500 mb-1">{event.role}</div>
-                    )}
-                    <div className="text-sm text-gray-600">{event.note}</div>
-                    {event.attachment && (
-                      <div className="mt-3">
-                        {event.attachment}
-                      </div>
-                    )}
-                  </div>
-                </div>
-              ))}
-            </div>
+                ))}
+              </div>
             </CardContent>
           </Card>
 
