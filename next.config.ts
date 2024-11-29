@@ -13,6 +13,7 @@ const nextConfig: NextConfig = {
     config.resolve.fallback = {
       'child_process': false,
       'fs': false,
+      'readline': false,
     }
 
     return config

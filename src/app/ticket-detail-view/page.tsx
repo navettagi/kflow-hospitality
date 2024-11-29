@@ -1,24 +1,46 @@
 "use client";
 
 import React, { useState } from 'react';
+import { Trash2 } from 'lucide-react';
 import {
-  Clock,
   MapPin,
-  User,
   Timer,
-  MessageSquare,
   Image,
   Paperclip,
   ChevronLeft,
   Send,
   Camera,
   AlertCircle,
-  CheckCircle,
-  History,
   Link
 } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Alert, AlertDescription } from '@/components/ui/alert';
+
+const ImagePreview = () => {
+  const [showDelete, setShowDelete] = useState(false);
+  
+  return (
+    <div 
+      className="relative w-32 h-32 mb-4"
+      onMouseEnter={() => setShowDelete(true)}
+      onMouseLeave={() => setShowDelete(false)}
+    >
+      <img
+        src="/images/chandelier.jpg"
+        alt="Chandelier"
+        className="w-full h-full object-cover rounded-lg"
+      />
+      {showDelete && (
+        <button 
+          className="absolute top-2 right-2 p-1 bg-white/80 rounded-full hover:bg-white"
+          onClick={() => console.log('Delete clicked')}
+        >
+          <Trash2 className="w-4 h-4 text-red-500" />
+        </button>
+      )}
+    </div>
+  );
+};
 
 const TicketDetailView = () => {
   const [newComment, setNewComment] = useState('');
@@ -68,7 +90,8 @@ const TicketDetailView = () => {
       user: 'Mike Thompson',
       role: 'Maintenance Technician',
       action: 'Added photo',
-      note: 'Identified loose connection in the fixture'
+      note: 'Identified loose connection in the body',
+      attachment: <ImagePreview />
     }
   ];
 
@@ -148,23 +171,28 @@ const TicketDetailView = () => {
               <CardTitle>Timeline</CardTitle>
             </CardHeader>
             <CardContent>
-              <div className="space-y-4">
-                {timeline.map((event, index) => (
-                  <div key={index} className="flex gap-4">
-                    <div className="w-16 text-sm text-gray-500">
-                      {event.time}
-                    </div>
-                    <div className="flex-1 pb-4 border-l-2 border-gray-200 pl-4 relative">
-                      <div className="absolute w-2 h-2 bg-blue-600 rounded-full -left-[5px] top-2" />
-                      <div className="text-sm font-medium">{event.user}</div>
-                      {event.role && (
-                        <div className="text-xs text-gray-500 mb-1">{event.role}</div>
-                      )}
-                      <div className="text-sm text-gray-600">{event.note}</div>
-                    </div>
+            <div className="space-y-4">
+              {timeline.map((event, index) => (
+                <div key={index} className="flex gap-4">
+                  <div className="w-16 text-sm text-gray-500">
+                    {event.time}
                   </div>
-                ))}
-              </div>
+                  <div className="flex-1 pb-4 border-l-2 border-gray-200 pl-4 relative">
+                    <div className="absolute w-2 h-2 bg-blue-600 rounded-full -left-[5px] top-2" />
+                    <div className="text-sm font-medium">{event.user}</div>
+                    {event.role && (
+                      <div className="text-xs text-gray-500 mb-1">{event.role}</div>
+                    )}
+                    <div className="text-sm text-gray-600">{event.note}</div>
+                    {event.attachment && (
+                      <div className="mt-3">
+                        {event.attachment}
+                      </div>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
             </CardContent>
           </Card>
 
